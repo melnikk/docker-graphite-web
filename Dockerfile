@@ -1,29 +1,23 @@
-FROM centos:7.2.1511
+FROM alpine:3.4
 
 MAINTAINER Alex Akulov <alexakulov86@gmail.com>
 
-RUN 	yum install -y epel-release && \
-	yum update -y
+RUN	apk add --no-cache nginx supervisor build-base python-dev py-pip
+	
+RUN	pip install twisted==13.1 gunicorn gevent django==1.6 django-tagging==0.3.6 pytz pyparsing python-memcached whisper==0.9.15
 
-RUN 	yum install -y gcc && \
-	yum install -y python-devel python-pip pycairo nginx supervisor && \
-	pip install --upgrade pip && \
-	pip install twisted==13.1 gunicorn gevent django==1.6 django-tagging==0.3.6 pytz pyparsing python-memcached whisper==0.9.15 && \
-	pip install https://github.com/skbkontur/graphite-web/archive/0.9.x-performance.zip && \
-	yum remove -y gcc python-devel && \
-	yum autoremove -y
+RUN	pip install https://github.com/skbkontur/graphite-web/archive/0.9.x-performance.zip
 
-RUN	touch /etc/udev/rules.d/40-vm-hotadd.rules
-
-RUN 	useradd -r graphite && \
+RUN	addgroup -S graphite && \
+	adduser -S graphite -G graphite && \
 	mkdir -p /opt/graphite/webapp/graphite /var/log/graphite /opt/graphite/storage/whisper
 
-ENV GRAPHITE_STORAGE_DIR /opt/graphite/storage
-ENV GRAPHITE_CONF_DIR /opt/graphite/conf
-ENV PYTHONPATH /opt/graphite/webapp
-ENV LOG_DIR /var/log/graphite
-ENV DEFAULT_INDEX_TABLESPACE graphite
-ENV GUNICORN_WORKERS 2
+ENV	GRAPHITE_STORAGE_DIR=/opt/graphite/storage \
+	GRAPHITE_CONF_DIR=/opt/graphite/conf \
+	PYTHONPATH=/opt/graphite/webapp \
+	LOG_DIR=/var/log/graphite \
+	DEFAULT_INDEX_TABLESPACE=graphite \
+	GUNICORN_WORKERS=2
 
 ADD ./config/graphite_wsgi.py /opt/graphite/conf/graphite_wsgi.py
 ADD ./config/local_settings.py /opt/graphite/webapp/graphite/local_settings.py
@@ -38,4 +32,5 @@ RUN 	cd /opt/graphite/webapp/graphite && django-admin.py syncdb --settings=graph
 
 WORKDIR /opt/graphite/webapp
 EXPOSE 80
+
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]

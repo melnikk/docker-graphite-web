@@ -10,7 +10,7 @@ RUN	pip install https://github.com/skbkontur/graphite-web/archive/0.9.x-performa
 
 RUN	addgroup -S graphite && \
 	adduser -S graphite -G graphite && \
-	mkdir -p /opt/graphite/webapp/graphite /var/log/graphite /opt/graphite/storage/whisper
+	mkdir -p /opt/graphite/webapp/graphite /var/log/graphite /opt/graphite/storage/whisper /var/log/supervisor
 
 ENV	GRAPHITE_STORAGE_DIR=/opt/graphite/storage \
 	GRAPHITE_CONF_DIR=/opt/graphite/conf \

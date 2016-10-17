@@ -2,9 +2,9 @@ FROM alpine:3.4
 
 MAINTAINER Alex Akulov <alexakulov86@gmail.com>
 
-RUN	apk add --no-cache nginx supervisor build-base python-dev py-pip py-cffi
+RUN	apk add --no-cache nginx supervisor build-base python-dev py-pip py-cffi py-cairo
 	
-RUN	pip install twisted==13.1 gunicorn gevent django==1.6 django-tagging==0.3.6 pytz pyparsing==1.5.7 python-memcached==1.47 whisper==0.9.15 cairocffi constants pycairo simplejson==2.1.6 whitenoise
+RUN	pip install twisted==13.1 gunicorn gevent django==1.6 django-tagging==0.3.6 pytz pyparsing==1.5.7 python-memcached==1.47 whisper==0.9.15 cairocffi constants simplejson==2.1.6 whitenoise
 
 RUN	pip install https://github.com/skbkontur/graphite-web/archive/0.9.x-performance.zip
 

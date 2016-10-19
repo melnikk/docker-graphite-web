@@ -44,3 +44,6 @@ if os.getenv("REMOTE_PREFETCH_DATA"):
 
 if os.getenv("BAN_PREFIX"):
     BAN_PREFIX = os.getenv("BAN_PREFIX")
+
+if os.getenv("TZ"):
+    TIME_ZONE = os.getenv("TZ")

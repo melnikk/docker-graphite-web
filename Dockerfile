@@ -1,19 +1,19 @@
-FROM centos:7.2.1511
+FROM centos:7.3.1611
 
 MAINTAINER Alex Akulov <alexakulov86@gmail.com>
 
-RUN 	yum install -y epel-release && \
-	yum update -y
-
-RUN 	yum install -y gcc && \
-	yum install -y python-devel python-pip pycairo nginx supervisor && \
-	pip install --upgrade pip && \
-	pip install twisted==13.1 gunicorn gevent django==1.6 django-tagging==0.3.6 pytz pyparsing python-memcached whisper==0.9.15 && \
-	pip install https://github.com/skbkontur/graphite-web/archive/0.9.x-performance.zip && \
-
 RUN	touch /etc/udev/rules.d/40-vm-hotadd.rules
+RUN	yum install -y epel-release
+RUN	yum install -y gcc
+RUN	yum install -y python-devel python-pip pycairo nginx supervisor
 
-RUN 	useradd -r graphite && \
+RUN	pip install twisted==13.1 gunicorn gevent django==1.6 django-tagging==0.3.6 pytz pyparsing python-memcached whisper==0.9.15
+RUN	yum remove -y gcc python-devel && \
+	yum autoremove -y
+
+RUN	pip install https://github.com/skbkontur/graphite-web/archive/0.9.x-performance.zip
+
+RUN	useradd -r graphite && \
 	mkdir -p /opt/graphite/webapp/graphite /var/log/graphite /opt/graphite/storage/whisper
 
 ENV	TZ=UTC \
@@ -31,7 +31,7 @@ ADD ./config/nginx.conf /etc/nginx/nginx.conf
 ADD ./config/supervisord.conf /etc/supervisor/supervisord.conf
 
 # Initialize database(sqlite3)
-RUN 	cd /opt/graphite/webapp/graphite && django-admin.py syncdb --settings=graphite.settings --noinput && \
+RUN	cd /opt/graphite/webapp/graphite && django-admin.py syncdb --settings=graphite.settings --noinput && \
 	cd /opt/graphite/webapp/graphite && django-admin.py loaddata --settings=graphite.settings initial_data.json && \
 	chown -R graphite:graphite /opt/graphite /var/log/graphite
 

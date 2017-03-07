@@ -1,18 +1,31 @@
-FROM alpine:3.4
+FROM alpine:3.5
 
 MAINTAINER Alex Akulov <alexakulov86@gmail.com>
 
 RUN	apk add --no-cache nginx supervisor build-base python-dev py-pip py-cffi py-cairo tzdata
-	
-RUN	pip install twisted==13.1 gunicorn gevent django==1.6 django-tagging==0.3.6 pytz pyparsing==1.5.7 python-memcached==1.47 whisper==0.9.15 cairocffi constants simplejson==2.1.6 whitenoise
 
-RUN	pip install https://github.com/skbkontur/graphite-web/archive/0.9.x-performance.zip
+RUN	pip install django==1.9 \
+	python-memcached==1.47 \
+	txAMQP==0.4 \
+	simplejson==2.1.6 \
+	django-tagging==0.4.3 \
+	gunicorn \
+	pytz \
+	pyparsing \
+	cairocffi \
+	whitenoise \
+	scandir \
+	twisted==13.1 \
+	whisper==0.9.15
+
+RUN	pip install https://github.com/graphite-project/graphite-web/archive/master.zip
 
 RUN	addgroup -S graphite && \
 	adduser -S graphite -G graphite && \
 	mkdir -p /opt/graphite/webapp/graphite /var/log/graphite /opt/graphite/storage/whisper /var/log/supervisor
 
 ENV	TZ=UTC \
+	WHISPER_DIR=/opt/graphite/storage/whisper \
 	GRAPHITE_STORAGE_DIR=/opt/graphite/storage \
 	GRAPHITE_CONF_DIR=/opt/graphite/conf \
 	PYTHONPATH=/opt/graphite/webapp \
@@ -26,9 +39,10 @@ ADD ./config/initial_data.json /opt/graphite/webapp/graphite/initial_data.json
 ADD ./config/nginx.conf /etc/nginx/nginx.conf
 ADD ./config/supervisord.conf /etc/supervisor/supervisord.conf
 ADD ./docker-entrypoint.sh /usr/bin/docker-entrypoint.sh
+RUN	chmod +x /usr/bin/docker-entrypoint.sh
 
 # Initialize database(sqlite3)
-RUN 	cd /opt/graphite/webapp/graphite && django-admin.py syncdb --settings=graphite.settings --noinput && \
+RUN	cd /opt/graphite/webapp/graphite && django-admin.py migrate --settings=graphite.settings --run-syncdb && \
 	cd /opt/graphite/webapp/graphite && django-admin.py loaddata --settings=graphite.settings initial_data.json && \
 	touch /opt/graphite/storage/index && \
 	chown -R graphite:graphite /opt/graphite /var/log/graphite

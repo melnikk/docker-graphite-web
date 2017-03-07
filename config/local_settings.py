@@ -1,6 +1,8 @@
 import os
 
 LOG_DIR = '/var/log/graphite'
+WHISPER_DIR = '/opt/graphite/storage/whisper'
+
 if os.getenv("CARBONLINK_HOSTS"):
     CARBONLINK_HOSTS = os.getenv("CARBONLINK_HOSTS").split(',')
 

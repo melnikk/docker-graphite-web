@@ -18,7 +18,7 @@ RUN	pip install django==1.9 \
 	twisted==13.1 \
 	whisper==0.9.15
 
-RUN	pip install https://github.com/graphite-project/graphite-web/archive/master.zip
+RUN	pip install https://github.com/AlexAkulov/graphite-web/archive/kontur.zip
 
 RUN	addgroup -S graphite && \
 	adduser -S graphite -G graphite && \

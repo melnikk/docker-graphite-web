@@ -6,7 +6,7 @@ RUN	apk add --no-cache nginx supervisor build-base python-dev py-pip py-cffi py-
 	
 RUN	pip install twisted==13.1 gunicorn gevent django==1.6 django-tagging==0.3.6 pytz pyparsing==1.5.7 python-memcached==1.47 whisper==0.9.15 cairocffi constants simplejson==2.1.6 whitenoise
 
-RUN	pip install https://github.com/skbkontur/graphite-web/archive/0.9.x-performance.zip
+RUN	pip install https://github.com/skbkontur/graphite-web/archive/1.0.2.zip
 
 RUN	addgroup -S graphite && \
 	adduser -S graphite -G graphite && \
